@@ -1,0 +1,75 @@
+
+library(tidyverse)
+
+##Setting working directory - change the URL to your working directory where the original CSV should be placed.
+
+setwd("C:/Users/diego.juffe/OneDrive - WCMC/1_Projects/12_IUCN/2019_analysis/Analyses/used")
+
+
+RL052019txt <-read.csv("Threats_texts_Diego_v2_2019-1_CLEAN.csv")                     
+
+str(RL052019txt)
+nrow(RL052019txt)
+dim (RL052019txt)
+dim(RL052019txt)
+head(RL052019txt)
+
+
+length(unique(RL052019txt)) #gives me number of unique columns
+
+View (RL052019txt)
+
+RLtxt_thr <-subset(RL052019txt, rlcategory %in% c('CR','EN','VU'))  #selection of threatened species
+
+View (RLtxt_thr)
+
+length(unique(RLtxt_thr))
+
+write.csv(RLtxt_thr,"RLtxt_thr.csv") #export to csv in workspace
+
+
+#Find search terms in RLtxt_thr CSV, column called threats.detailed.text and show results in a csv with 1= species threats details text mentions the term and 0 = species threats details text does not mention the term. 
+
+RLtxt_thr_oilcrops <- RLtxt_thr %>% 
+  distinct %>% 
+  mutate(
+    is_oilpalm = case_when(
+      str_detect(threats.detailed.text, regex("palm oil", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("oil palm", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("palm plantation", ignore_case = TRUE)) ~ 1),
+    is_soybean = case_when(
+      str_detect(threats.detailed.text, regex("\\bsoy\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bsoybean\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bsoybeans\\b", ignore_case = TRUE)) ~ 1), 
+    is_rapeseed = case_when(
+      str_detect(threats.detailed.text, regex("\\brapeseed\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\brapeseeds\\b", ignore_case = TRUE)) ~ 1), 
+    is_cotton = case_when(
+      str_detect(threats.detailed.text, regex("\\bcotton\\b", ignore_case = TRUE)) ~ 1), 
+    is_groundnuts = case_when(
+      str_detect(threats.detailed.text, regex("\\bgroundnut\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bgroundnuts\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bpeanut\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bpeanuts\\b", ignore_case = TRUE)) ~ 1), 
+    is_sunflower = case_when(
+      str_detect(threats.detailed.text, regex("\\bsunflower\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bsunflowers\\b", ignore_case = TRUE)) ~ 1),
+    is_coconut = case_when(
+      str_detect(threats.detailed.text, regex("\\bcoconut\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bcoconuts\\b", ignore_case = TRUE)) ~ 1),
+    is_maize = case_when(
+      str_detect(threats.detailed.text, regex("\\bmaize\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bcorn\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bcorns\\b", ignore_case = TRUE)) ~ 1),
+    is_olive = case_when(
+      str_detect(threats.detailed.text, regex("\\bolive\\b ", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bolives\\b", ignore_case = TRUE)) ~ 1),
+    is_cattle = case_when(
+      str_detect(threats.detailed.text, regex("\\bcattle\\b", ignore_case = TRUE)) ~ 1,
+      str_detect(threats.detailed.text, regex("\\bbeef\\b", ignore_case = TRUE)) ~ 1))
+
+
+View (RLtxt_thr_oilcrops)
+write.csv (RLtxt_thr_oilcrops,"RL_thr_oilcrops3.csv")
+
+print ("all done!")
